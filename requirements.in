@@ -1,0 +1,6 @@
+sentence-transformers
+requests
+ollama
+tqdm
+datasets
+qdrant-client
