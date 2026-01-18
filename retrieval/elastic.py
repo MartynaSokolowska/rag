@@ -5,7 +5,7 @@ import json
 from config.config import ES_URL, HEADERS, INDEX
 
 
-def initialize_elsticsearch():
+def initialize_elsticsearch(data_path):
     requests.delete(f"{ES_URL}/{INDEX}", headers=HEADERS)
     body = {
         "settings": {
@@ -60,6 +60,7 @@ def initialize_elsticsearch():
 
 
     resp = requests.put(f"{ES_URL}/{INDEX}", headers=HEADERS, data=json.dumps(body))
+    bulk_insert(generate_docs_jsonl(data_path, INDEX), INDEX) 
     return resp.json()
 
 def generate_docs_jsonl(jsonl, index_name):
@@ -146,67 +147,101 @@ def search_es_by_id(doc_id):
     return docs
 
 def query_es_filter_date(text, date_from, date_to, k=100):
-    query_vec = embed_query(text)
-    
     body = {
         "size": k,
         "_source": ["id", "text", "domain", "date"],
         "query": {
-            "knn": {
-                "field": "vector",
-                "query_vector": query_vec,
-                "k": k,
-                "num_candidates": 10000
-            }
-        },
-        "post_filter": {
             "bool": {
                 "must": [
-                    {"range": {"date": {"gte": date_from, "lte": date_to}}}
+                    {
+                        "match": {
+                            "text": {
+                                "query": text,
+                                "operator": "and"
+                            }
+                        }
+                    }
+                ],
+                "filter": [
+                    {
+                        "range": {
+                            "date": {
+                                "gte": date_from,
+                                "lte": date_to
+                            }
+                        }
+                    }
                 ]
             }
         }
     }
 
     url = f"{ES_URL}/{INDEX}/_search"
-    response = requests.get(url, headers={"Content-Type": "application/json"}, data=json.dumps(body))
+    response = requests.post(
+        url,
+        headers={"Content-Type": "application/json"},
+        data=json.dumps(body)
+    )
+
     results = response.json()
 
     res = []
     for hit in results.get("hits", {}).get("hits", []):
-        source = hit["_source"]
-        res.append([source.get("id"),source.get("domain"),source.get("date")])
-    return res[:3]
+        src = hit["_source"]
+        res.append({
+            "id": src.get("id"),
+            "text": src.get("text"),
+            "domain": src.get("domain"),
+            "date": src.get("date")
+        })
+
+    return res
+
 
 def query_es_filter_domain(text, domain, k=100):
-    query_vec = embed_query(text)
-    
     body = {
         "size": k,
         "_source": ["id", "text", "domain", "date"],
         "query": {
-            "knn": {
-                "field": "vector",
-                "query_vector": query_vec,
-                "k": k,
-                "num_candidates": 10000
-            }
-        },
-        "post_filter": {
             "bool": {
                 "must": [
-                    {"term": {"domain": domain}},
+                    {
+                        "match": {
+                            "text": {
+                                "query": text,
+                                "operator": "and"
+                            }
+                        }
+                    }
+                ],
+                "filter": [
+                    {
+                        "term": {
+                            "domain": domain
+                        }
+                    }
                 ]
             }
         }
     }
 
     url = f"{ES_URL}/{INDEX}/_search"
-    response = requests.get(url, headers={"Content-Type": "application/json"}, data=json.dumps(body))
+    response = requests.post(
+        url,
+        headers={"Content-Type": "application/json"},
+        data=json.dumps(body)
+    )
+
     results = response.json()
 
     res = []
     for hit in results.get("hits", {}).get("hits", []):
-        source = hit["_source"]
-        res.append([source.get("id"),source.get("domain"),source.get("date")])
-    return res[:3]
+        src = hit["_source"]
+        res.append({
+            "id": src.get("id"),
+            "text": src.get("text"),
+            "domain": src.get("domain"),
+            "date": src.get("date")
+        })
+
+    return res
