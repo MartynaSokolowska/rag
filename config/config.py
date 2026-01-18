@@ -14,7 +14,9 @@ NORMALIZE_EMBEDDINGS = True
 
 # === LLM & PROMPT SETTINGS ===
 LLM_MODEL = 'gemma2:2b'
-TASK_PROMPT = "Odpowiedz na pytanie na podstawie poniższego kontekstu.Jeśli nie ma odpowiedzi w kontekście, napisz \"Nie wiem\"."
+TASK_PROMPT = "Odpowiedz na pytanie na podstawie poniższego kontekstu." \
+"Jeśli nie ma odpowiedzi w kontekście, napisz \"Nie wiem\". " \
+"Podaj cytat na podstawie, którego zwracasz odpowiedź."
 
 # === CHUNKING SETTINGS ===
 CHUNK_TYPE = "TOKENS"  # works also with CHARS
@@ -28,6 +30,9 @@ HEADERS = {
     "Accept": "application/vnd.elasticsearch+json; compatible-with=8"
 }
 INDEX = "culturax_lab8"
+
+# ES & Qdrant initialization
+INITIALIZE = False
 
 # === MODE SETTINGS ===
 SAFE_MODE_CONFIG = {

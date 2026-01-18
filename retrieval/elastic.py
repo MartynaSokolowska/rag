@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timedelta
 import random
 import requests
 import json
@@ -68,7 +68,7 @@ def generate_docs_jsonl(jsonl, index_name):
         for i, line in enumerate(f):
             obj = json.loads(line)
             random_days_ago = random.randint(0, 1095)
-            fake_date = datetime.now() - datetime.timedelta(days=random_days_ago)
+            fake_date = datetime.now() - timedelta(days=random_days_ago)
             yield {
                 "_index": index_name,
                 "_id": i,

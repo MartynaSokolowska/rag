@@ -71,7 +71,7 @@ def validate_answer(answer, retrieved_docs, min_hits=1):
     for doc in retrieved_docs:
         text = (doc["text"] if isinstance(doc, dict) else doc).lower()
 
-        for chunk in re.findall(r".{40,80}", answer):
+        for chunk in re.findall(r".{30,80}", answer):
             if chunk in text:
                 hits += 1
                 break

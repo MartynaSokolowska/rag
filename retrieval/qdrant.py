@@ -21,7 +21,7 @@ def iso_to_timestamp(date_str):
     dt = datetime.fromisoformat(date_str.replace("Z",""))
     return dt.timestamp() 
 
-def load_data_to_qdrant():
+def load_data_to_qdrant(data_file):
     collection_name = "culturax_pl"
 
     client.recreate_collection(
@@ -30,7 +30,7 @@ def load_data_to_qdrant():
     )
 
     documents = []
-    with open("culturax_pl_clean.jsonl", "r", encoding="utf-8") as f:
+    with open(data_file, "r", encoding="utf-8") as f:
         for line in f:
             doc = json.loads(line)
             documents.append(doc)

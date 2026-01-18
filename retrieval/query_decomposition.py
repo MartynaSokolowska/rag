@@ -77,7 +77,7 @@ def decompose_query(user_input):
     es_query = get_es_question(user_input)
     qdrant_query = get_qdrant_question(user_input)
 
-    return {"main_question":user_input,
+    return {"main_query":user_input,
             "es_query":es_query,
             "qdrant_query":qdrant_query}
 
