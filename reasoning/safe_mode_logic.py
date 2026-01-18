@@ -31,7 +31,7 @@ def run_safe_mode(query, docs):
 
         if strategy == "save_to_memory":            
             logger.info("SAFE MODE | Zapis do pamięci.")
-            add_to_memory(query, reason="safe_mode_failed")
+            add_to_memory(query)
             return "Nie znalazłem informacji w dokumentach."
 
     return "Nie wiem."
