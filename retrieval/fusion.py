@@ -1,6 +1,7 @@
 from retrieval.elastic import get_bm25_es, query_es_filter_date, query_es_filter_domain, search_es_by_id
 from retrieval.qdrant import get_knn_qdrant, query_qdrant_filter_date, query_qdrant_filter_domain
 from retrieval.query_analysis_functions import *
+from utils.logger import setup_logger
 
 
 def rrf_fusion(results_lists, weights=None, k=60):
@@ -24,7 +25,7 @@ def rrf_fusion(results_lists, weights=None, k=60):
 
 
 def retrive(base_queries):
-    
+    logger = setup_logger("rag-pipeline")
     user_input = base_queries["main_query"]
     es_query = base_queries["es_query"]
     qdrant_query = base_queries["qdrant_query"]
@@ -33,16 +34,19 @@ def retrive(base_queries):
     qdrant_docs = None
 
     if is_id(user_input):
+        logger.info("RETRIVAL | Searching by id")
         return search_es_by_id(user_input)
     
     domain_ = domain_filter(user_input)
     if domain_["domain_filter"]:
+        logger.info("RETRIVAL | Using domain filter")
         domain = domain_["domain"]
         es_docs = query_es_filter_domain(es_query, domain)
         qdrant_docs = query_qdrant_filter_domain(qdrant_query, domain)
     
     date_ = date_filter(user_input)
     if date_["date_filter"]:
+        logger.info("RETRIVAL | Using date filter")
         date_from = date_["date_from"]
         date_to = date_["date_to"]
         es_docs = query_es_filter_date(es_query, date_from, date_to)
@@ -54,7 +58,10 @@ def retrive(base_queries):
 
     if is_semantic(user_input):
         weights = [0.4, 0.6]
+        logger.info(f"RETRIVAL | Query is semantic - weights (ES, Qdrant) {weights}")
     else:
         weights = [0.8, 0.2]
+        logger.info(f"RETRIVAL | Query is not semantic - weights (ES, Qdrant) {weights}")
+
 
     return rrf_fusion([es_docs, qdrant_docs], weights=weights, k=20)

@@ -39,3 +39,6 @@ SAFE_MODE_CONFIG = {
     ],
     "max_retries": 2
 }
+
+# === LOG SETTINGS ===
+LOG_NAME = "log1"
