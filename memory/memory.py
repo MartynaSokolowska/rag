@@ -2,7 +2,7 @@ import json
 import os
 from datetime import datetime
 
-MEMORY_FILE = "pending.json"
+MEMORY_FILE = "memory\\pending.json"
 
 
 def _init_memory():
