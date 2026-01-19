@@ -5,7 +5,7 @@ from reasoning.validation import filter_retrieved
 from retrieval.query_analysis_functions import is_id
 from retrieval.query_decomposition import decompose_query
 from retrieval.fusion import retrive
-from config.config import CHUNK_TYPE, CHUNK_SIZE, NUM_CHUNKS, SAFE_MODE_CONFIG
+from config.config import CHUNK_TYPE, CHUNK_SIZE, NUM_CHUNKS
 from utils.logger import setup_logger
 
 
@@ -18,7 +18,7 @@ def rag_query(query):
     retrived = retrive(base_queries)
 
     if not is_id(query):
-        selected_docs, rejected_count = filter_retrieved(retrived, query, max_docs=NUM_CHUNKS)
+        selected_docs, rejected_count = filter_retrieved(retrived, query, max_docs=NUM_CHUNKS*10)
         logger.info(f"Liczba odrzuconych dokumentów: {rejected_count}")
     else:
         selected_docs = retrived
