@@ -79,7 +79,6 @@ def query_qdrant_filter_domain(text, domain, top_k=3):
         limit=top_k,
         query_filter=query_filter
     )
-    print(results)
     docs = []
     for point in results.points:
         doc_text = point.payload.get("text")
