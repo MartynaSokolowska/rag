@@ -79,7 +79,18 @@ def query_qdrant_filter_domain(text, domain, top_k=3):
         limit=top_k,
         query_filter=query_filter
     )
-    return results
+    print(results)
+    docs = []
+    for point in results.points:
+        doc_text = point.payload.get("text")
+        if not doc_text:
+            continue
+
+        docs.append({
+            "id": point.id,
+            "text": doc_text
+        })
+    return docs
 
 def query_qdrant_filter_date(text, date_from="2000-01-01T00:00:00Z", date_to="2020-01-01T00:00:00Z", top_k=3):
     vector = embed_query(text)
@@ -94,5 +105,15 @@ def query_qdrant_filter_date(text, date_from="2000-01-01T00:00:00Z", date_to="20
         limit=top_k,
         query_filter=query_filter
     )
-    return results
+    docs = []
+    for point in results.points:
+        doc_text = point.payload.get("text")
+        if not doc_text:
+            continue
+
+        docs.append({
+            "id": point.id,
+            "text": doc_text
+        })
+    return docs
 
